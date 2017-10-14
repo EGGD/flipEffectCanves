@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+
+<body>
+    <canvas id="testCanvas" height="1440px" width="2560px">
+
+    </canvas>
+
+</body>
+<script src="js/createjs.min.js"></script>
+<script src="EaselJS-master/lib/easeljs.js"></script>
+<script>
+    var stage;
+    init();
+
+    function init() {
+        var canvas = document.getElementById("testCanvas");
+        stage = new createjs.Stage(canvas);
+        stage.canvas.width = 750;
+        stage.canvas.height = 1334;
+        stage.autoClear = true;
+        //绘制外部容器
+        container = new createjs.Container();
+        stage.addChild(container);
+        //添加背景图
+        var bg = new createjs.Bitmap("img/56417589_p0.jpg");
+        stage.addChild(bg);
+        //增加5个冰激凌，不断做旋转和放缩
+        for (var i = 0; i < 5; i++) {
+            var man = new createjs.Bitmap("img/1.jpg");
+            man.regX = 60;
+            man.regY = 42;
+            man.x = canvas.width / 5 * 4;
+            man.y = canvas.height / 6 * (i + 1);
+            man.scaleX = man.scaleY = 1;
+            stage.addChild(man);
+            createjs.Tween.get(man, {
+                loop: true
+            }, true).to({
+                rotation: 360,
+                scaleX: 2,
+                scaleY: 2
+            }, 1000).to({
+                rotation: 360,
+                scaleX: 1,
+                scaleY: 1
+            }, 1000);
+            man.addEventListener("click", eventCallback);
+            //监听点击非常方便，位图的透明区域忽略鼠标事件
+        }
+
+        function eventCallback(event) {
+            console.log("click", event.currentTarget);
+        }
+        stage.update();
+        createjs.Ticker.setFPS(60);
+        createjs.Ticker.addEventListener("tick", tick);
+    }
+
+    //这里有点猥琐，需要用户自行控制舞台不断update更新
+    function tick(event) {
+        stage.update(event);
+    }
+
+</script>
+
+</html>

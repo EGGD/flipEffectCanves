@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
+	<link rel="stylesheet" href="css/index.css">
+</head>
+
+<body>
+	<canvas id="demo" height="1440px" width="2560px">
+
+	</canvas>
+
+</body>
+<script src="js/createjs.min.js"></script>
+<script src="EaselJS-master/lib/easeljs.js"></script>
+<script>
+	window.onload = function () {
+		var demo = document.getElementById("demo");
+		var stage = new createjs.Stage(demo);
+		var iwidth = 0;
+		var iheight = 0;
+		var data = [];
+		//填充背景
+		var bg = new Image();
+		bg.src = 'img/56417589_p0.jpg';
+		var bitmap = new createjs.Bitmap(bg);
+		bg.onload = setBg;
+		function setBg() {
+			stage.addChild(bitmap);
+			stage.update();
+			getdata(function () {
+				set(0)
+			});
+			setText();
+			setTimeout(function () {
+				getdata(function () {
+					var children = stage.children;
+					var childrenTrueSmallImg = [];
+					for (var b = 0; b < children.length; b++) {
+						if (children[b].name == 'samllImg') {
+							childrenTrueSmallImg.push(children[b])
+						}
+					}
+					flipEffect(0, childrenTrueSmallImg)
+				});
+			}, 10000);
+		}
+		//重新获取数据后的翻转特效
+		function flipEffect(i, children) {
+			if (i == 15) return
+			setTimeout(function () {
+				children[i].image.src = 'img/number/' + data[i] + '.png'
+				createjs.Tween.get(children[i]).to({
+					scaleX: -1
+				}, 500).to({
+					scaleX: 1
+				}, 500);
+				flipEffect(++i, children)
+			}, 500);
+		}
+		//初始化创建控件  把数字填充到画布当中
+		function set(i) {
+			if (i == 15) return;
+			if (i == 5 || i == 10) {
+				iwidth = 1
+				iheight++;
+			} else {
+				iwidth++;
+			}
+			setImgReverse(iwidth, iheight, data[i], true);
+			setTimeout(function () {
+				set(++i)
+			}, 500);
+		}
+		//填充画布并添加动画
+		function setImgReverse(iwidth, iheight, data, tf) {
+			var samllImg = new Image();
+			samllImg.src = 'img/number/1.png';
+			samllImg.onload = function () {
+				if (!tf) { return; }
+				var smallImg1 = new createjs.Bitmap(samllImg);
+				smallImg1.name = 'samllImg';
+				//容器  可以作为一个层面来算 就好像躯干一样
+				var h = smallImg1.getBounds().height;
+				var w = smallImg1.getBounds().width;
+				smallImg1.x = document.getElementById("demo").width * 0.05 + w * iwidth * 2;
+				smallImg1.y = document.getElementById("demo").height * 0.15 + h * iheight * 2;
+				smallImg1.regX = h / 2;
+				smallImg1.regY = w / 2;
+				createjs.Tween.get(smallImg1).to({
+					scaleX: -1
+				}, 500).to({
+					scaleX: 1
+				}, 500).call(function () {
+					tf = false;
+					smallImg1.image.src = 'img/number/' + data + '.png'
+					createjs.Tween.get(smallImg1).to({
+						scaleX: -1
+					}, 500).to({
+						scaleX: 1
+					}, 500);
+				});
+				// contain.addChild(smallImg1);
+				stage.addChild(smallImg1);
+				stage.update()
+				createjs.Ticker.setFPS(60);
+				createjs.Ticker.addEventListener("tick", tick);
+			}
+
+		}
+		// 时时刷新
+		function tick(event) {
+			stage.update(event);
+		}
+		//实现时间的时时显示
+		function setText() {
+			var text = new createjs.Text(new Date(), "20px Arial", "#ff7700");
+			text.x = bg.width - 500;
+			text.y = bg.height - 50;
+			stage.addChild(text);
+			stage.update();
+			setInterval(function () {
+				text.text = new Date()
+				stage.update();
+			}, 1000)
+		}
+		//随机数据
+		function getdata(callback) {
+			data = [];
+			for (var i = 1; i < 16; i++) {
+				data.push(Math.round(Math.random() * 8 + 1));
+			}
+			if (typeof callback == 'function') {
+				callback();
+			}
+		}
+
+
+
+
+	}
+
+</script>
+
+</html>

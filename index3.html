@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>Document</title>
+		<style type="text/css">
+			* {
+				margin: 0;
+				padding: 0;
+			}
+			
+			html,
+			body {
+				height: 100%;
+				width: 100%;
+			}
+			canvas {
+				display: block;
+				width: 100%;
+				height: 100%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<canvas id="demo" height="1440px" width="2560px">
+        
+    </canvas>
+
+	</body>
+
+	<script type="text/javascript" src='https://code.createjs.com/createjs-2015.11.26.min.js'></script>
+	<script>
+		window.onload = function() {
+			var demo = document.getElementById("demo");
+			var stage = new createjs.Stage(demo);
+			createjs.Ticker.setFPS(60);
+			createjs.Ticker.on("tick", onTick);
+			//填充背景
+			var bg = new Image();
+			bg.src = 'img/56417589_p0.jpg';
+			// bg.src = 'img/w.jpg';
+			// bg.src = 'img/58769465_p0.png'
+			bg.onload = setBg;
+
+			var circle;
+
+			function setBg() {
+				var bitmap = new createjs.Bitmap(bg);
+				//bitmap.setBounds(0, 0, 100, 100)
+				// console.log(bg.width+','+demo.width)
+				bitmap.scaleX = demo.width / bg.width;
+				bitmap.scaleY = demo.height / bg.height;
+				bitmap.x = 0;
+				bitmap.y = 0;
+				stage.addChild(bitmap);
+
+				//创建一个形状的显示对象
+				circle = new createjs.Shape();
+				circle.graphics.beginFill("red").drawCircle(0, 0, 40);
+				//形状实例的设置位置
+				circle.x = circle.y = 50;
+				//添加形状实例到舞台显示列表
+				stage.addChild(circle);
+
+				test();
+
+			}
+
+			function test() {
+				var z = getRandomNumber(0, 100) / 50;
+				createjs.Tween.get(circle).to({
+					x: getRandomNumber(0, demo.width),
+					y: getRandomNumber(0, demo.height),
+					scaleX: z,
+					scaleY: z
+				}, 2000).call(test);
+			}
+
+			function onTick(e) {
+				stage.update();
+			}
+
+			var getRandomNumber = function(min, max) {
+				return Math.floor(Math.random() * (max - min) + min);
+			};
+
+		}
+	</script>
+
+</html>
